@@ -7,6 +7,5 @@ using namespace std;
 
 int main()
 {
-	cout << "adham" << endl;
 	return 0;
 }
