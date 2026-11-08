@@ -22,7 +22,7 @@ struct stClient
 struct stClientInput
 {
 	string accountNumber;
-	string pin;
+	string pinCode;
 };
 
 enum enOptions
@@ -95,12 +95,6 @@ enOptions showMainMenuScreen()
 	return ((enOptions)readMainMenuOption());
 }
 
-//void backToMenuScreen()
-//{
-//	cout << endl << "Press any key to go back to main menu...";
-//	system("pause>0");
-//}
-
 void showCheckbalanceScreen()
 {
 	cout << "--------------------------------------\n";
@@ -167,6 +161,8 @@ void showNormalWithdrawScreen()
 {
 	cout << "============================================\n";
 	cout << setw(34) << "Normal Withdraw Screen\n";
+	cout << "============================================\n";
+	cout << "Your balance: " << client.balance << endl;
 	cout << "============================================\n";
 }
 
@@ -262,11 +258,11 @@ vector<stClient> loadClientsDataFromFileToVector(string fileName)
 	return vClients;
 }
 
-void reloadDataFromVectorToFile(string fileName)
+void reloadDataFromVectorToFile()
 {
 	fstream myFile;
 
-	myFile.open(fileName, ios::out);
+	myFile.open(clientsFileName, ios::out);
 
 	if (myFile.is_open())
 	{
@@ -280,13 +276,23 @@ void reloadDataFromVectorToFile(string fileName)
 	}
 }
 
+bool confirmTransaction()
+{
+	cout << "\nAre you sure you want to perform this transaction? [y/n]? ";
+	char check = 'n';
+	cin >> check;
+
+	return (tolower(check) == 'y');
+}
+
 void performWithdraw(double amount)
 {
 	client.balance -= amount;
-	cout << "\nDone successfully!\n";
-	cout << "Your balance: " << client.balance << endl;
 
-	reloadDataFromVectorToFile(clientsFileName);
+	cout << "\nDone successfully!";
+	cout << "\nYour balance: " << client.balance << endl;
+
+	reloadDataFromVectorToFile();
 }
 
 void normalWithdraw()
@@ -294,26 +300,21 @@ void normalWithdraw()
 	showNormalWithdrawScreen();
 	double withdrawAmount = readTheAmountOfWithdraw();
 	checkIfAmountExceedsBalance(withdrawAmount);
-	cout << "\nAre you sure you want to perform this transaction? [y/n]? ";
-	char check = 'n';
-	cin >> check;
-	if (tolower(check) == 'y')
+	if (confirmTransaction())
 		performWithdraw(withdrawAmount);
 	//else..
-
 }
 
 bool check(stClientInput clientInput)
 {
 	for (stClient& data : vClients)
 	{
-		if (data.accountNumber == clientInput.accountNumber && data.pincode == clientInput.pin)
+		if (data.accountNumber == clientInput.accountNumber && data.pincode == clientInput.pinCode)
 		{
 			client = data;
 			return true;
 		}
 	}
-
 	return false;
 }
 
@@ -329,11 +330,11 @@ stClientInput getClientInput()
 {
 	stClientInput clientInput;
 
-	cout << "Please enter username: ";
+	cout << "Please enter the account number: ";
 	getline(cin >> ws, clientInput.accountNumber);
 
-	cout << "Please enter password: ";
-	getline(cin >> ws, clientInput.pin);
+	cout << "Please enter PIN: ";
+	getline(cin >> ws, clientInput.pinCode);
 
 	return clientInput;
 }
@@ -348,7 +349,7 @@ void loginScreen(string fileName)
 	{
 		system("cls");
 		showLoginScreen();
-		cout << "Invalid username/password!\n";
+		cout << "Invalid account number/PIN!\n";
 		clientInput = getClientInput();
 	}
 }
@@ -373,10 +374,10 @@ void performDeposit(double depositAmount)
 {
 	client.balance += depositAmount;
 
-	cout << "\nDone successfully!\n";
-	cout << "Your balance: " << client.balance << endl;
+	cout << "\nDone successfully!";
+	cout << "\nYour balance: " << client.balance << endl;
 
-	reloadDataFromVectorToFile(clientsFileName);
+	reloadDataFromVectorToFile();
 }
 
 void deposit()
@@ -385,15 +386,16 @@ void deposit()
 
 	double depositAmount = getDepositAmount();
 
-	cout << "\nAre you sure you want to perform this transaction? [y/n]? ";
-	char check = 'n';
-	cin >> check;
-
-	if (tolower(check) == 'y')
+	if (confirmTransaction())
 		performDeposit(depositAmount);
 	//else
-		//....
+}
 
+void backToMenuScreen()
+{
+	cout << endl
+		<< "Press any key to go back to main menu...";
+	system("pause>0");
 }
 
 void quickWithdraw()
@@ -403,37 +405,33 @@ void quickWithdraw()
 	switch (withdrawAmount)
 	{
 	case enWithdrawAmount::twenty:
-		performWithdraw(20);
+		if (confirmTransaction())
+			performDeposit(20);
 		break;
 	case enWithdrawAmount::fifty:
-		performWithdraw(50);
+		if (confirmTransaction())
+			performWithdraw(50);
 		break;
-
 	case enWithdrawAmount::hundred:
-		performWithdraw(100);
+		if (confirmTransaction())
+			performWithdraw(100);
 		break;
-
 	case enWithdrawAmount::twoHundred:
-		performWithdraw(200);
+		if (confirmTransaction())
+			performWithdraw(200);
 		break;
-
 	case enWithdrawAmount::fiveHundred:
-		performWithdraw(500);
+		if (confirmTransaction())
+			performWithdraw(500);
 		break;
-
 	case enWithdrawAmount::oneThousand:
-		performWithdraw(1000);
+		if (confirmTransaction())
+			performWithdraw(1000);
 		break;
 	case enWithdrawAmount::Exit:
 		return;
 	}
-}
-
-void backToMenuScreen()
-{
-	cout << endl
-		<< "Press any key to go back to main menu...";
-	system("pause>0");
+	backToMenuScreen();
 }
 
 void startProgram()
@@ -446,32 +444,26 @@ void startProgram()
 	{
 		enOptions option = showMainMenuScreen();
 
+		system("cls");
+
 		switch (option)
 		{
 		case enOptions::QuickWithdraw:
-			system("cls");
 			quickWithdraw();
-			backToMenuScreen();
 			break;
 		case enOptions::NormalWithdraw:
-			system("cls");
 			normalWithdraw();
 			backToMenuScreen();
 			break;
 		case enOptions::Deposit:
-			system("cls");
 			deposit();
 			backToMenuScreen();
-
 			break;
 		case enOptions::CheckBalance:
-			system("cls");
 			checkBalacnce();
 			backToMenuScreen();
-
 			break;
 		case enOptions::Logout:
-			system("cls");
 			startProgram();
 		}
 	}
