@@ -95,11 +95,11 @@ enOptions showMainMenuScreen()
 	return ((enOptions)readMainMenuOption());
 }
 
-void backToMenuScreen()
-{
-	cout << endl << "Press any key to go back to main menu...";
-	system("pause>0");
-}
+//void backToMenuScreen()
+//{
+//	cout << endl << "Press any key to go back to main menu...";
+//	system("pause>0");
+//}
 
 void showCheckbalanceScreen()
 {
@@ -353,17 +353,132 @@ void loginScreen(string fileName)
 	}
 }
 
-//void quickWithdraw()
-//{
-//	getWithdrawAmount();
-//}
+void showDepositScreen()
+{
+	cout << "============================================\n";
+	cout << right << setw(30) << "Deposit Screen" << endl;
+	cout << "============================================\n";
+}
+
+double getDepositAmount()
+{
+	double depositAmount = 0;
+	cout << "\nPlease enter deposit amount: ";
+	cin >> depositAmount;
+
+	return depositAmount;
+}
+
+void performDeposit(double depositAmount)
+{
+	client.balance += depositAmount;
+
+	cout << "\nDone successfully!\n";
+	cout << "Your balance: " << client.balance << endl;
+
+	reloadDataFromVectorToFile(clientsFileName);
+}
+
+void deposit()
+{
+	showDepositScreen();
+
+	double depositAmount = getDepositAmount();
+
+	cout << "\nAre you sure you want to perform this transaction? [y/n]? ";
+	char check = 'n';
+	cin >> check;
+
+	if (tolower(check) == 'y')
+		performDeposit(depositAmount);
+	//else
+		//....
+
+}
+
+void quickWithdraw()
+{
+	enWithdrawAmount withdrawAmount = getWithdrawAmount();
+
+	switch (withdrawAmount)
+	{
+	case enWithdrawAmount::twenty:
+		performWithdraw(20);
+		break;
+	case enWithdrawAmount::fifty:
+		performWithdraw(50);
+		break;
+
+	case enWithdrawAmount::hundred:
+		performWithdraw(100);
+		break;
+
+	case enWithdrawAmount::twoHundred:
+		performWithdraw(200);
+		break;
+
+	case enWithdrawAmount::fiveHundred:
+		performWithdraw(500);
+		break;
+
+	case enWithdrawAmount::oneThousand:
+		performWithdraw(1000);
+		break;
+	case enWithdrawAmount::Exit:
+		return;
+	}
+}
+
+void backToMenuScreen()
+{
+	cout << endl
+		<< "Press any key to go back to main menu...";
+	system("pause>0");
+}
+
+void startProgram()
+{
+	vClients = loadClientsDataFromFileToVector(clientsFileName);
+
+	loginScreen(clientsFileName);
+
+	while(true)
+	{
+		enOptions option = showMainMenuScreen();
+
+		switch (option)
+		{
+		case enOptions::QuickWithdraw:
+			system("cls");
+			quickWithdraw();
+			backToMenuScreen();
+			break;
+		case enOptions::NormalWithdraw:
+			system("cls");
+			normalWithdraw();
+			backToMenuScreen();
+			break;
+		case enOptions::Deposit:
+			system("cls");
+			deposit();
+			backToMenuScreen();
+
+			break;
+		case enOptions::CheckBalance:
+			system("cls");
+			checkBalacnce();
+			backToMenuScreen();
+
+			break;
+		case enOptions::Logout:
+			system("cls");
+			startProgram();
+		}
+	}
+}
 
 int main()
 {
-	vClients = loadClientsDataFromFileToVector(clientsFileName);
-	loginScreen(clientsFileName);
-
-	system("cls");
-	normalWithdraw();
+	startProgram();
 	return 0;
 }
