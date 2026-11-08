@@ -97,18 +97,18 @@ enOptions showMainMenuScreen()
 
 void showCheckbalanceScreen()
 {
-	cout << "--------------------------------------\n";
+	cout << "============================================\n";
 	cout << setw(30) << "Check Balance Screen\n";
-	cout << "--------------------------------------" << endl;
+	cout << "============================================" << endl;
 }
 
 void showBalance()
 {
-	cout << "\nYour balance: " << client.balance << endl;
-	cout << "\n--------------------------------------\n";
+	cout << "Your balance: " << client.balance << endl;
+	cout << "============================================\n";
 }
 
-void checkBalacnce()
+void checkBalance()
 {
 	showCheckbalanceScreen();
 	showBalance();
@@ -321,16 +321,16 @@ bool check(stClientInput clientInput)
 void showLoginScreen()
 {
 	system("cls");
-	cout << "--------------------------------------\n";
+	cout << "============================================\n";
 	cout << setw(27) << "Login Screen\n";
-	cout << "--------------------------------------" << endl;
+	cout << "============================================" << endl;
 }
 
 stClientInput getClientInput()
 {
 	stClientInput clientInput;
 
-	cout << "Please enter the account number: ";
+	cout << "Please enter account number: ";
 	getline(cin >> ws, clientInput.accountNumber);
 
 	cout << "Please enter PIN: ";
@@ -349,7 +349,7 @@ void loginScreen(string fileName)
 	{
 		system("cls");
 		showLoginScreen();
-		cout << "Invalid account number/PIN!\n";
+		cout << "Invalid [account number/PIN]!\n";
 		clientInput = getClientInput();
 	}
 }
@@ -460,7 +460,7 @@ void startProgram()
 			backToMenuScreen();
 			break;
 		case enOptions::CheckBalance:
-			checkBalacnce();
+			checkBalance();
 			backToMenuScreen();
 			break;
 		case enOptions::Logout:
