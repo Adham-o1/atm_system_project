@@ -181,13 +181,9 @@ double readTheAmountOfWithdraw()
 	return withdrawAmount;
 }
 
-void checkIfAmountExceedsBalance(double& withdrawAmount)
+bool checkIfAmountExceedsBalance(double withdrawAmount)
 {
-	while (withdrawAmount > client.balance)
-	{
-		cout << "\nThe amount exceeds the balance, MAX[" << client.balance << "]: ";
-		cin >> withdrawAmount;
-	}
+	return (withdrawAmount > client.balance);
 }
 
 vector<string> vSplit(string str, string delim = "#//#")
@@ -299,7 +295,11 @@ void normalWithdraw()
 {
 	showNormalWithdrawScreen();
 	double withdrawAmount = readTheAmountOfWithdraw();
-	checkIfAmountExceedsBalance(withdrawAmount);
+	if (checkIfAmountExceedsBalance(withdrawAmount))
+	{
+		cout << "\nThe amount exceeds your balance!" << endl;
+		return;
+	}
 	if (confirmTransaction())
 		performWithdraw(withdrawAmount);
 	//else..
@@ -347,9 +347,8 @@ void loginScreen(string fileName)
 
 	while (!check(clientInput))
 	{
-		system("cls");
 		showLoginScreen();
-		cout << "Invalid [account number/PIN]!\n";
+		cout << "Invalid account number or PIN!\n";
 		clientInput = getClientInput();
 	}
 }
@@ -388,7 +387,7 @@ void deposit()
 
 	if (confirmTransaction())
 		performDeposit(depositAmount);
-	//else
+	//else..
 }
 
 void backToMenuScreen()
